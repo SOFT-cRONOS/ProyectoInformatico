@@ -90,20 +90,89 @@
         }
       }
 
+
+      function deletePerson(id) {
+            startLoading();
+
+            fetch(`https://64efbb0a8a8b66ecf778e98e.mockapi.io/persons/${id}`, {
+            method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                throw new Error('Error al eliminar el registro');
+                }
+                return response.json();
+            })
+            .then(() => {
+                // Eliminar la fila de la tabla correspondiente al ID
+                console.log(id)
+                const rowToDelete = document.getElementById(`row-${id}`);
+                rowToDelete.remove();
+                stopLoading();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                stopLoading();
+            })
+            .finally(() => {
+                console.log('Promesa finalizada (resuelta o rechazada)');
+            });
+        }
+
+      function createDeleteButton(id) {
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Eliminar';
+            deleteButton.addEventListener('click', () => deletePerson(id));
+            return deleteButton;
+        }
+
       function getAll() {
         startLoading();
-        fetch("https://64efbb0a8a8b66ecf778e98e.mockapi.io/v1/persons")
+        
+        fetch("https://64efbb0a8a8b66ecf778e98e.mockapi.io/persons")
           .then(response => handleResponse(response))
           .then((data) => {
             // console.log('Datos en formato JSON: ', data)
-            console.table(data);
+            // console.table(data);
+
+
+            // Busca la tabla por el id.
+            const tableBody = document.getElementById("all-persons");
+
+            // Limpiar el contenido actual de la tabla
+            tableBody.innerHTML = "";
+
+            // Iterar a través de los datos y construir las filas de la tabla
+            data.forEach(person => {
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td>${person.id}</td>
+                <td>${person.Nombre}</td>
+                <td>${person.Apellido}</td>
+                <td>${person.email}</td>
+                <td>${person.DNI}</td>
+                <td>
+                <!-- Botones de accion -->
+                    <!-- llama a la funcion para crear boton y la incorpora como html-->
+                    ${createDeleteButton(person.id).outerHTML}
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+            });
+
+            //cuando termine de cargar datos para la animacion
+            stopLoading();
           })
           .catch((error) => {
             console.log("Promesa rechazada por", error);
+            // si dio error hacer tal cosa
           })
           .finally(() => {
             console.log("Promesa finalizada (resuelta o rechazada)");
+            // finalmente hace esto
           });
+
+          
       }
     </script>
   </body>
