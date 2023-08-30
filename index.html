@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Clase 3</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      table,
+      th,
+      td {
+        border-collapse: collapse;
+        border: 1px solid black;
+        padding: 3px 10px;
+      }
+      .load {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: none;
+      }
+      .loading {
+        display: inline-block;
+        border: 5px solid grey;
+        border-top: 5px solid blue;
+        animation-name: rot;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+      }
+      @keyframes rot {
+        from {
+          transform: rotate(0);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Página de pruebas de la API</h1>
+    <p>Estado: <span id="status"> --- </span> <span class="load"> </span></p>
+    <button onclick="getAll()">GET all</button>
+
+    <hr />
+    <h2>Lista de personas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>email</th>
+          <th>DNI</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="all-persons"></tbody>
+    </table>
+
+    <script>
+      function startLoading(info) {
+        let span = document.getElementsByClassName("load")[0];
+        span.classList.add("loading");
+        document.getElementById("status").innerHTML = "Cargando ...";
+      }
+      function stopLoading(info) {
+        let span = document.getElementsByClassName("load")[0];
+        span.classList.remove("loading");
+        document.getElementById("status").innerHTML = "Finalizado";
+      }
+
+      function handleResponse(response) {
+        if (!response.ok) {
+          return Promise.reject({
+            message:
+              "HTTP Code:" +
+              response.status +
+              "- Description:" +
+              response.statusText,
+          });
+        } else {
+          return response.json();
+        }
+      }
+
+      function getAll() {
+        startLoading();
+        fetch("https://64efbb0a8a8b66ecf778e98e.mockapi.io/v1/persons")
+          .then(response => handleResponse(response))
+          .then((data) => {
+            // console.log('Datos en formato JSON: ', data)
+            console.table(data);
+          })
+          .catch((error) => {
+            console.log("Promesa rechazada por", error);
+          })
+          .finally(() => {
+            console.log("Promesa finalizada (resuelta o rechazada)");
+          });
+      }
+    </script>
+  </body>
+</html>
