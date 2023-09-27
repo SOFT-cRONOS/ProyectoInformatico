@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Enviar los datos del nuevo cliente a la API
-        fetch('https://api.escuelajs.co/api/v1/users', {
+        fetch('https://api.escuelajs.co/api/v1/users/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
